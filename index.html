@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSUpendWise</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(23, 70, 162, 0.18), transparent 34%),
+        radial-gradient(circle at top right, rgba(96, 165, 250, 0.22), transparent 30%),
+        linear-gradient(180deg, #f8fbff 0%, #eef4ff 48%, #f7f9fc 100%);
+      color: #1f2937;
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(23, 70, 162, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 70, 162, 0.04) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 72%);
+    }
+
+    header {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0f2f6f 0%, #1746a2 52%, #2563eb 100%);
+      color: white;
+      padding: 42px 20px 72px;
+      text-align: center;
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 18px 45px rgba(15, 47, 111, 0.22);
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      right: -110px;
+      top: -150px;
+    }
+
+    header::after {
+      content: "₩";
+      position: absolute;
+      left: 8%;
+      top: 24px;
+      font-size: 110px;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.08);
+    }
+
+    header h1 {
+      position: relative;
+      z-index: 1;
+      font-size: 42px;
+      margin-bottom: 10px;
+      letter-spacing: -1px;
+    }
+
+    header p {
+      position: relative;
+      z-index: 1;
+      opacity: 0.92;
+      font-size: 16px;
+    }
+
+    .hero-badge {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 7px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(10px);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: min(1150px, 92%);
+      margin: -42px auto 60px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+      padding: 12px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 18px 45px rgba(15, 47, 111, 0.13);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .tab-btn {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      border: none;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: transparent;
+      color: #475569;
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: left;
+    }
+
+    .tab-icon {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: #eff6ff;
+      color: #1746a2;
+      font-size: 17px;
+      box-shadow: inset 0 0 0 1px #dbeafe;
+    }
+
+    .tab-text {
+      display: grid;
+      gap: 2px;
+    }
+
+    .tab-title {
+      font-size: 15px;
+    }
+
+    .tab-desc {
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: linear-gradient(135deg, #1746a2, #2563eb);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(23, 70, 162, 0.22);
+    }
+
+    .tab-btn.active .tab-icon,
+    .tab-btn:hover .tab-icon {
+      background: rgba(255, 255, 255, 0.18);
+      color: white;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    }
+
+    .tab-btn.active .tab-desc,
+    .tab-btn:hover .tab-desc {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 14px 34px rgba(15, 47, 111, 0.11);
+      backdrop-filter: blur(12px);
+    }
+
+    .card h2,
+    .card h3 {
+      margin-bottom: 14px;
+      color: #0f2f6f;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      background: white;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #1746a2;
+      box-shadow: 0 0 0 3px rgba(23, 70, 162, 0.12);
+    }
+
+    .main-btn,
+    .sub-btn,
+    .save-small-btn,
+    .delete-btn,
+    .confirm-cancel-btn,
+    .confirm-ok-btn,
+    .month-nav-btn,
+    .close-btn {
+      border: none;
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .main-btn,
+    .sub-btn {
+      margin-top: 16px;
+      width: 100%;
+      border-radius: 14px;
+      padding: 13px 16px;
+    }
+
+    .main-btn {
+      background: #1746a2;
+      color: white;
+    }
+
+    .sub-btn {
+      background: #e0ecff;
+      color: #1746a2;
+    }
+
+    .main-btn:hover,
+    .sub-btn:hover,
+    .month-nav-btn:hover,
+    .save-small-btn:hover,
+    .delete-btn:hover,
+    .confirm-cancel-btn:hover,
+    .confirm-ok-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(0.96);
+    }
+
+    .summary-number {
+      font-size: 30px;
+      font-weight: 900;
+      color: #1746a2;
+      margin-top: 6px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #dbeafe;
+      color: #1d4ed8;
+      margin-top: 6px;
+    }
+
+    .month-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .budget-month-control {
+      margin-bottom: 6px;
+    }
+
+    .month-nav-btn {
+      background: #e0ecff;
+      color: #1746a2;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+
+    .month-nav-btn:hover {
+      background: #1746a2;
+      color: white;
+    }
+
+    .month-title {
+      min-width: 120px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+      color: #0f2f6f;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 9px 12px;
+    }
+
+    .calendar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .calendar-summary {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .summary-pill {
+      background: #eff6ff;
+      color: #1746a2;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .calendar-wrap {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .calendar-head {
+      text-align: center;
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 0;
+    }
+
+    .calendar-day {
+      min-height: 146px;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 9px;
+      background: #fbfdff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .calendar-day:hover {
+      border-color: #1746a2;
+      box-shadow: 0 6px 18px rgba(23, 70, 162, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .calendar-day.empty {
+      background: #f3f4f6;
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .calendar-day.empty:hover {
+      border-color: #e5e7eb;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .calendar-day.today {
+      border: 2px solid #1746a2;
+      background: #eff6ff;
+    }
+
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .day-number {
+      font-weight: 900;
+      font-size: 13px;
+      color: #0f2f6f;
+    }
+
+    .day-count {
+      font-size: 11px;
+      font-weight: 800;
+      color: #6b7280;
+      background: #f3f4f6;
+      padding: 3px 6px;
+      border-radius: 999px;
+    }
+
+    .day-category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-content: flex-start;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .day-category-chip {
+      max-width: 100%;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .calendar-total {
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: 900;
+      color: #1746a2;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 7px;
+    }
+
+    .day-hint {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 700;
+    }
+
+    .result-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .period-btn {
+      border: 1px solid #1746a2;
+      background: white;
+      color: #1746a2;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .period-btn.active {
+      background: #1746a2;
+      color: white;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .stat-box {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .advice-box {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 18px;
+      padding: 18px;
+      color: #9a3412;
+    }
+
+    .advice-title {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: #7c2d12;
+    }
+
+    .advice-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .advice-item {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 10px;
+      align-items: start;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(251, 146, 60, 0.35);
+      border-radius: 14px;
+      padding: 11px;
+      font-weight: 700;
+    }
+
+    .advice-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #fb923c;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .category-row {
+      margin: 12px 0;
+    }
+
+    .category-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .bar-bg {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: #1746a2;
+      border-radius: 999px;
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.52);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .modal-bg.active {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(760px, 96vw);
+      max-height: 88vh;
+      overflow-y: auto;
+      background: white;
+      border-radius: 22px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      padding: 22px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .modal-header h2 {
+      color: #0f2f6f;
+      margin-bottom: 4px;
+    }
+
+    .close-btn {
+      background: #f3f4f6;
+      color: #374151;
+      border-radius: 999px;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+    }
+
+    .modal-total-box {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 16px;
+      padding: 14px;
+      color: #1746a2;
+      font-weight: 900;
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: #f8fafc;
+      padding: 14px;
+    }
+
+    .detail-form-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr 1fr auto auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .detail-form-grid label {
+      margin: 0 0 4px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .detail-form-grid input,
+    .detail-form-grid select {
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .save-small-btn {
+      background: #1746a2;
+      color: white;
+      border-radius: 12px;
+      padding: 11px 12px;
+    }
+
+    .delete-btn {
+      background: #fee2e2;
+      color: #b91c1c;
+      border-radius: 12px;
+      padding: 11px 12px;
+    }
+
+    .confirm-message {
+      color: #475569;
+      font-size: 15px;
+      margin: 8px 0 18px;
+    }
+
+    .confirm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .confirm-cancel-btn,
+    .confirm-ok-btn {
+      border-radius: 13px;
+      padding: 11px 15px;
+    }
+
+    .confirm-cancel-btn {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .confirm-ok-btn {
+      background: #1746a2;
+      color: white;
+    }
+
+    footer {
+      text-align: center;
+      color: #6b7280;
+      font-size: 13px;
+      padding: 28px;
+    }
+
+    @media (max-width: 1000px) {
+      .calendar-wrap {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .calendar-head {
+        display: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .detail-form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .calendar-wrap {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 30px;
+      }
+
+      .summary-number {
+        font-size: 24px;
+      }
+
+      .calendar-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero-badge">SSU Student Budget Manager</div>
+    <h1>SSUpendWise</h1>
+    <p>숭실대 학생을 위한 소비 습관 분석 도우미</p>
+  </header>
+
+  <main class="container">
+    <nav class="tabs">
+      <button class="tab-btn active" data-page="budgetPage">
+        <span class="tab-icon">₩</span>
+        <span class="tab-text">
+          <span class="tab-title">예산 설정</span>
+          <span class="tab-desc">월 예산과 하루 기준</span>
+        </span>
+      </button>
+      <button class="tab-btn" data-page="calendarPage">
+        <span class="tab-icon">📅</span>
+        <span class="tab-text">
+          <span class="tab-title">소비 캘린더</span>
+          <span class="tab-desc">날짜별 지출 관리</span>
+        </span>
+      </button>
+      <button class="tab-btn" data-page="analysisPage">
+        <span class="tab-icon">↗</span>
+        <span class="tab-text">
+          <span class="tab-title">소비 분석</span>
+          <span class="tab-desc">기간별 패턴과 조언</span>
+        </span>
+      </button>
+    </nav>
+
+    <section id="budgetPage" class="page active">
+      <div class="grid">
+        <div class="card">
+          <h2>예산 설정</h2>
+          <p class="muted">월을 선택하고 예산을 입력하면 해당 월의 실제 일수를 기준으로 하루 권장 예산이 자동 계산됩니다.</p>
+
+          <label>예산을 설정할 월</label>
+          <div class="month-control budget-month-control">
+            <button class="month-nav-btn" onclick="changeBudgetMonth(-1)">이전 달</button>
+            <div id="budgetMonthTitle" class="month-title">이번 달</div>
+            <button class="month-nav-btn" onclick="changeBudgetMonth(1)">다음 달</button>
+            <button class="month-nav-btn" onclick="goCurrentBudgetMonth()">이번 달</button>
+          </div>
+
+          <label for="monthBudget">월 예산</label>
+          <input id="monthBudget" type="number" placeholder="예: 400000" />
+
+          <button class="main-btn" onclick="saveBudget()">예산 저장하기</button>
+          <button class="sub-btn" onclick="resetAllData()">저장 데이터 초기화</button>
+        </div>
+
+        <div class="card">
+          <h2>예산 요약</h2>
+          <p class="muted">선택한 월의 실제 일수를 기준으로 하루 권장 예산을 계산합니다.</p>
+          <p>월 예산</p>
+          <div id="budgetView" class="summary-number">0원</div>
+          <p style="margin-top:16px;">하루 권장 예산</p>
+          <div id="dailyBudgetView" class="summary-number">0원</div>
+          <p id="budgetMonthView" class="muted" style="margin-top:10px;">선택된 월 기준으로 자동 계산됩니다.</p>
+          <span class="tag">SSU Budget Planning</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="calendarPage" class="page">
+      <div class="card">
+        <h2>날짜별 지출 관리</h2>
+        <p class="muted">달력에서 날짜를 클릭하면 해당 날짜의 소비 목록을 추가, 수정, 삭제할 수 있습니다. 달력에는 날짜별 카테고리 합계와 전체 합계만 간단히 표시됩니다.</p>
+        <div class="calendar-top">
+          <div class="month-control">
+            <button class="month-nav-btn" onclick="changeCalendarMonth(-1)">이전 달</button>
+            <div id="calendarMonthTitle" class="month-title">이번 달</div>
+            <button class="month-nav-btn" onclick="changeCalendarMonth(1)">다음 달</button>
+            <button class="month-nav-btn" onclick="goCurrentMonth()">이번 달</button>
+          </div>
+          <div class="calendar-summary">
+            <span id="calendarTotalPill" class="summary-pill">월 합계 0원</span>
+            <span id="calendarCountPill" class="summary-pill">0건 기록</span>
+          </div>
+        </div>
+        <div id="calendarList" class="calendar-wrap"></div>
+      </div>
+    </section>
+
+    <section id="analysisPage" class="page">
+      <div class="card">
+        <h2>소비 분석 결과</h2>
+        <p class="muted">오늘, 이번 주, 이번 달 단위로 소비 패턴을 확인할 수 있습니다.</p>
+
+        <div class="result-tabs">
+          <button class="period-btn active" data-period="day">오늘</button>
+          <button class="period-btn" data-period="week">이번 주</button>
+          <button class="period-btn" data-period="month">이번 달</button>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-label">총 지출</div>
+            <div id="totalExpense" class="stat-value">0원</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">예산 사용률</div>
+            <div id="budgetRate" class="stat-value">0%</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">가장 큰 소비</div>
+            <div id="topCategory" class="stat-value">없음</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">학교 관련 지출</div>
+            <div id="schoolExpense" class="stat-value">0원</div>
+          </div>
+        </div>
+
+        <div class="advice-box">
+          <div class="advice-title">소비 조언</div>
+          <div id="adviceList" class="advice-list"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <h2>카테고리별 지출 비율</h2>
+        <div id="categoryChart"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="confirmModal" class="modal-bg" onclick="closeConfirmModal(event)">
+    <div class="modal-card" style="width:min(440px, 94vw);" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2 id="confirmTitle">확인</h2>
+          <p id="confirmMessage" class="confirm-message">작업을 진행할까요?</p>
+        </div>
+        <button class="close-btn" onclick="closeConfirmModal()">×</button>
+      </div>
+      <div class="confirm-actions">
+        <button class="confirm-cancel-btn" onclick="closeConfirmModal()">취소</button>
+        <button id="confirmOkButton" class="confirm-ok-btn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dayModal" class="modal-bg" onclick="closeDayModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalDateTitle">날짜별 소비 상세</h2>
+          <p class="muted">이 날짜에 기록된 소비 목록을 추가, 수정, 삭제할 수 있습니다.</p>
+        </div>
+        <button class="close-btn" onclick="closeDayModal()">×</button>
+      </div>
+      <div id="modalTotalBox" class="modal-total-box"></div>
+
+      <div class="detail-item" style="margin-bottom:14px; background:#ffffff;">
+        <h3 style="margin-bottom:10px; color:#0f2f6f;">새 지출 추가</h3>
+        <div class="detail-form-grid">
+          <div>
+            <label for="modalNewName">소비 항목</label>
+            <input id="modalNewName" placeholder="예: 학식, 커피, 출력" />
+          </div>
+          <div>
+            <label for="modalNewAmount">금액</label>
+            <input id="modalNewAmount" type="number" placeholder="예: 6500" />
+          </div>
+          <div>
+            <label for="modalNewCategory">카테고리</label>
+            <select id="modalNewCategory"></select>
+          </div>
+          <button class="save-small-btn" onclick="addExpenseFromModal()">추가</button>
+          <button class="delete-btn" onclick="clearModalAddForm()">초기화</button>
+        </div>
+      </div>
+
+      <h3 style="margin-bottom:10px; color:#0f2f6f;">기록된 소비 목록</h3>
+      <div id="dayDetailList" class="detail-list"></div>
+    </div>
+  </div>
+
+  <footer>
+    SSUpendWise · AI 활용 인터랙티브 웹앱 목업 구현 과제
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "ssupendwise-data";
+    const CATEGORIES = ["식비", "카페", "교통", "쇼핑", "배달", "문화생활", "기타", "학식", "교재/자료", "동아리/모임", "과제/프로젝트", "학교생활 기타"];
+    const SCHOOL_CATEGORIES = ["학식", "교재/자료", "동아리/모임", "과제/프로젝트", "학교생활 기타"];
+
+    const sampleExpenses = [
+      { name: "학식", amount: 6500, category: "학식", date: getDateOffset(0) },
+      { name: "아메리카노", amount: 4500, category: "카페", date: getDateOffset(0) },
+      { name: "지하철", amount: 1500, category: "교통", date: getDateOffset(0) },
+      { name: "간식", amount: 2800, category: "식비", date: getDateOffset(0) },
+      { name: "과제 출력", amount: 1200, category: "교재/자료", date: getDateOffset(0) },
+      { name: "전공 교재 출력", amount: 3200, category: "교재/자료", date: getDateOffset(-2) },
+      { name: "저녁", amount: 9000, category: "식비", date: getDateOffset(-2) },
+      { name: "배달 음식", amount: 18000, category: "배달", date: getDateOffset(-4) },
+      { name: "편의점", amount: 4200, category: "식비", date: getDateOffset(-4) },
+      { name: "동아리 회비", amount: 10000, category: "동아리/모임", date: getDateOffset(-8) }
+    ];
+
+    let monthlyBudget = 400000;
+    let budgetMonth = getCurrentMonthValue();
+    let daysInMonth = getDaysInMonthFromMonthValue(budgetMonth);
+    let selectedCalendarDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    let selectedModalDate = getDateOffset(0);
+    let currentPeriod = "day";
+    let expenses = [...sampleExpenses];
+    let confirmCallback = null;
+
+    function getDateOffset(offset) {
+      const date = new Date();
+      date.setDate(date.getDate() + offset);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function getMonthValueFromDate(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function getCurrentMonthValue() {
+      return getMonthValueFromDate(new Date());
+    }
+
+    function getDaysInMonthFromMonthValue(monthValue) {
+      const [yearText, monthText] = monthValue.split("-");
+      return new Date(Number(yearText), Number(monthText), 0).getDate();
+    }
+
+    function getKoreanMonthFromValue(monthValue) {
+      const [yearText, monthText] = monthValue.split("-");
+      return `${yearText}년 ${Number(monthText)}월`;
+    }
+
+    function getKoreanMonthTitle(date) {
+      return `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+    }
+
+    function formatWon(value) {
+      return Number(value).toLocaleString("ko-KR") + "원";
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function saveData() {
+      const data = { monthlyBudget, budgetMonth, expenses };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        saveData();
+        return;
+      }
+
+      try {
+        const data = JSON.parse(saved);
+        monthlyBudget = Number(data.monthlyBudget) || 400000;
+        budgetMonth = data.budgetMonth || getCurrentMonthValue();
+        daysInMonth = getDaysInMonthFromMonthValue(budgetMonth);
+        expenses = Array.isArray(data.expenses) ? data.expenses : [...sampleExpenses];
+      } catch {
+        monthlyBudget = 400000;
+        budgetMonth = getCurrentMonthValue();
+        daysInMonth = getDaysInMonthFromMonthValue(budgetMonth);
+        expenses = [...sampleExpenses];
+        saveData();
+      }
+    }
+
+    function openConfirmModal(title, message, onConfirm, options = {}) {
+      confirmCallback = onConfirm;
+      document.getElementById("confirmTitle").textContent = title;
+      document.getElementById("confirmMessage").textContent = message;
+      document.querySelector(".confirm-cancel-btn").style.display = options.hideCancel ? "none" : "inline-block";
+      document.getElementById("confirmOkButton").onclick = function () {
+        if (typeof confirmCallback === "function") confirmCallback();
+        closeConfirmModal();
+      };
+      document.getElementById("confirmModal").classList.add("active");
+    }
+
+    function closeConfirmModal(event) {
+      if (event && event.target.id !== "confirmModal") return;
+      document.getElementById("confirmModal").classList.remove("active");
+      confirmCallback = null;
+    }
+
+    function showMessage(title, message) {
+      openConfirmModal(title, message, null, { hideCancel: true });
+    }
+
+    function changeBudgetMonth(offset) {
+      const [yearText, monthText] = budgetMonth.split("-");
+      const nextDate = new Date(Number(yearText), Number(monthText) - 1 + offset, 1);
+      budgetMonth = getMonthValueFromDate(nextDate);
+      daysInMonth = getDaysInMonthFromMonthValue(budgetMonth);
+      updateBudgetView();
+      updateAnalysis();
+    }
+
+    function goCurrentBudgetMonth() {
+      budgetMonth = getCurrentMonthValue();
+      daysInMonth = getDaysInMonthFromMonthValue(budgetMonth);
+      updateBudgetView();
+      updateAnalysis();
+    }
+
+    function saveBudget() {
+      const budgetInput = Number(document.getElementById("monthBudget").value);
+      if (!budgetInput || budgetInput <= 0) {
+        showMessage("입력 확인", "월 예산을 올바르게 입력해 주세요.");
+        return;
+      }
+
+      monthlyBudget = budgetInput;
+      daysInMonth = getDaysInMonthFromMonthValue(budgetMonth);
+      updateBudgetView();
+      updateAnalysis();
+      saveData();
+      movePage("calendarPage");
+    }
+
+    function updateBudgetView() {
+      daysInMonth = getDaysInMonthFromMonthValue(budgetMonth);
+      const dailyBudget = monthlyBudget / daysInMonth;
+      document.getElementById("budgetMonthTitle").textContent = getKoreanMonthFromValue(budgetMonth);
+      document.getElementById("budgetView").textContent = formatWon(monthlyBudget);
+      document.getElementById("dailyBudgetView").textContent = formatWon(Math.round(dailyBudget));
+      document.getElementById("budgetMonthView").textContent = `${getKoreanMonthFromValue(budgetMonth)} 기준으로 자동 계산됩니다.`;
+    }
+
+    function resetAllData() {
+      openConfirmModal(
+        "저장 데이터 초기화",
+        "저장된 예산과 지출 기록을 모두 초기화할까요? 초기화하면 기본 샘플 데이터로 돌아갑니다.",
+        function () {
+          localStorage.removeItem(STORAGE_KEY);
+          monthlyBudget = 400000;
+          budgetMonth = getCurrentMonthValue();
+          daysInMonth = getDaysInMonthFromMonthValue(budgetMonth);
+          selectedCalendarDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+          expenses = [...sampleExpenses];
+          document.getElementById("monthBudget").value = monthlyBudget;
+          updateBudgetView();
+          renderCalendarList();
+          updateAnalysis();
+          saveData();
+        }
+      );
+    }
+
+    function changeCalendarMonth(offset) {
+      const year = selectedCalendarDate.getFullYear();
+      const month = selectedCalendarDate.getMonth();
+      selectedCalendarDate = new Date(year, month + offset, 1);
+      renderCalendarList();
+    }
+
+    function goCurrentMonth() {
+      const now = new Date();
+      selectedCalendarDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      renderCalendarList();
+    }
+
+    function getSelectedMonthInfo() {
+      const selectedMonth = getMonthValueFromDate(selectedCalendarDate);
+      const year = selectedCalendarDate.getFullYear();
+      const month = selectedCalendarDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      return { year, month, firstDay, lastDay, selectedMonth };
+    }
+
+    function renderCalendarList() {
+      const calendar = document.getElementById("calendarList");
+      calendar.innerHTML = "";
+
+      const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+      weekDays.forEach(day => {
+        const head = document.createElement("div");
+        head.className = "calendar-head";
+        head.textContent = day;
+        calendar.appendChild(head);
+      });
+
+      const { year, month, firstDay, lastDay, selectedMonth } = getSelectedMonthInfo();
+      const firstWeekDay = firstDay.getDay();
+      const totalDays = lastDay.getDate();
+      const todayString = getDateOffset(0);
+      const monthExpenses = expenses.filter(item => item.date.startsWith(selectedMonth));
+      const monthTotal = monthExpenses.reduce((sum, item) => sum + item.amount, 0);
+
+      document.getElementById("calendarMonthTitle").textContent = getKoreanMonthTitle(selectedCalendarDate);
+      document.getElementById("calendarTotalPill").textContent = `월 합계 ${formatWon(monthTotal)}`;
+      document.getElementById("calendarCountPill").textContent = `${monthExpenses.length}건 기록`;
+
+      for (let i = 0; i < firstWeekDay; i++) {
+        const empty = document.createElement("div");
+        empty.className = "calendar-day empty";
+        calendar.appendChild(empty);
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dateString = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const dayExpenses = expenses
+          .map((item, index) => ({ ...item, index }))
+          .filter(item => item.date === dateString);
+        const dayTotal = dayExpenses.reduce((sum, item) => sum + item.amount, 0);
+        const categoryTotals = getCategoryTotals(dayExpenses);
+
+        const box = document.createElement("div");
+        box.className = "calendar-day" + (dateString === todayString ? " today" : "");
+        box.innerHTML = `
+          <div class="day-header">
+            <div class="day-number">${day}일</div>
+            <div class="day-count">${dayExpenses.length}건</div>
+          </div>
+        `;
+
+        if (dayExpenses.length === 0) {
+          box.innerHTML += `<p class="expense-meta">기록 없음</p><div class="day-category-list"></div><div class="day-hint">클릭하여 추가</div>`;
+        } else {
+          const categoryList = document.createElement("div");
+          categoryList.className = "day-category-list";
+
+          Object.entries(categoryTotals)
+            .sort((a, b) => b[1] - a[1])
+            .forEach(([category, amount]) => {
+              const chip = document.createElement("span");
+              chip.className = "day-category-chip";
+              chip.title = `${category} ${formatWon(amount)}`;
+              chip.textContent = `${category} ${formatWon(amount)}`;
+              categoryList.appendChild(chip);
+            });
+
+          box.appendChild(categoryList);
+          box.innerHTML += `<div class="calendar-total">합계 ${formatWon(dayTotal)}</div><div class="day-hint">클릭하여 상세 보기</div>`;
+        }
+
+        box.addEventListener("click", () => openDayModal(dateString));
+        calendar.appendChild(box);
+      }
+    }
+
+    function openDayModal(dateString) {
+      selectedModalDate = dateString;
+      document.getElementById("dayModal").classList.add("active");
+      clearModalAddForm();
+      renderDayDetailList();
+    }
+
+    function closeDayModal(event) {
+      if (event && event.target.id !== "dayModal") return;
+      document.getElementById("dayModal").classList.remove("active");
+    }
+
+    function fillCategorySelect(selectElement, selectedCategory = "식비") {
+      selectElement.innerHTML = "";
+      CATEGORIES.forEach(category => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        option.selected = category === selectedCategory;
+        selectElement.appendChild(option);
+      });
+    }
+
+    function clearModalAddForm() {
+      document.getElementById("modalNewName").value = "";
+      document.getElementById("modalNewAmount").value = "";
+      fillCategorySelect(document.getElementById("modalNewCategory"), "식비");
+    }
+
+    function addExpenseFromModal() {
+      const name = document.getElementById("modalNewName").value.trim();
+      const amount = Number(document.getElementById("modalNewAmount").value);
+      const category = document.getElementById("modalNewCategory").value;
+
+      if (!name || !amount || amount <= 0) {
+        showMessage("입력 확인", "소비 항목과 금액을 올바르게 입력해 주세요.");
+        return;
+      }
+
+      expenses.push({ name, amount, category, date: selectedModalDate });
+      saveData();
+      clearModalAddForm();
+      renderCalendarList();
+      renderDayDetailList();
+      updateAnalysis();
+    }
+
+    function renderDayDetailList() {
+      const detailList = document.getElementById("dayDetailList");
+      const modalTitle = document.getElementById("modalDateTitle");
+      const totalBox = document.getElementById("modalTotalBox");
+      const dayExpenses = expenses
+        .map((item, index) => ({ ...item, index }))
+        .filter(item => item.date === selectedModalDate);
+      const dayTotal = dayExpenses.reduce((sum, item) => sum + item.amount, 0);
+      const categoryCount = new Set(dayExpenses.map(item => item.category)).size;
+
+      modalTitle.textContent = `${selectedModalDate} 소비 상세`;
+      totalBox.innerHTML = `<span>총 ${dayExpenses.length}건</span><span>합계 ${formatWon(dayTotal)}</span><span>카테고리 ${categoryCount}개</span>`;
+      detailList.innerHTML = "";
+
+      if (dayExpenses.length === 0) {
+        detailList.innerHTML = "<p class='muted'>이 날짜에 기록된 소비가 없습니다. 위 입력창에서 새 지출을 추가해 보세요.</p>";
+        return;
+      }
+
+      dayExpenses.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "detail-item";
+        div.innerHTML = `
+          <div class="detail-form-grid">
+            <div>
+              <label for="editName-${item.index}">소비 항목</label>
+              <input id="editName-${item.index}" value="${escapeHTML(item.name)}" />
+            </div>
+            <div>
+              <label for="editAmount-${item.index}">금액</label>
+              <input id="editAmount-${item.index}" type="number" value="${item.amount}" />
+            </div>
+            <div>
+              <label for="editCategory-${item.index}">카테고리</label>
+              <select id="editCategory-${item.index}"></select>
+            </div>
+            <button class="save-small-btn" onclick="updateExpense(${item.index})">수정</button>
+            <button class="delete-btn" onclick="deleteExpenseFromModal(${item.index})">삭제</button>
+          </div>
+        `;
+        detailList.appendChild(div);
+        fillCategorySelect(document.getElementById(`editCategory-${item.index}`), item.category);
+      });
+    }
+
+    function updateExpense(index) {
+      const name = document.getElementById(`editName-${index}`).value.trim();
+      const amount = Number(document.getElementById(`editAmount-${index}`).value);
+      const category = document.getElementById(`editCategory-${index}`).value;
+
+      if (!name || !amount || amount <= 0) {
+        showMessage("입력 확인", "소비 항목과 금액을 올바르게 입력해 주세요.");
+        return;
+      }
+
+      expenses[index] = { ...expenses[index], name, amount, category };
+      saveData();
+      renderCalendarList();
+      renderDayDetailList();
+      updateAnalysis();
+    }
+
+    function deleteExpenseFromModal(index) {
+      openConfirmModal("지출 삭제", "이 지출 기록을 삭제할까요?", function () {
+        expenses.splice(index, 1);
+        saveData();
+        renderCalendarList();
+        renderDayDetailList();
+        updateAnalysis();
+      });
+    }
+
+    function filterExpensesByPeriod(period) {
+      const today = new Date(getDateOffset(0));
+      return expenses.filter(item => {
+        const itemDate = new Date(item.date);
+        const diffDays = Math.floor((today - itemDate) / (1000 * 60 * 60 * 24));
+
+        if (period === "day") return item.date === getDateOffset(0);
+        if (period === "week") return diffDays >= 0 && diffDays < 7;
+        if (period === "month") return itemDate.getMonth() === today.getMonth() && itemDate.getFullYear() === today.getFullYear();
+        return true;
+      });
+    }
+
+    function getCategoryTotals(targetExpenses) {
+      const totals = {};
+      targetExpenses.forEach(item => {
+        totals[item.category] = (totals[item.category] || 0) + Number(item.amount);
+      });
+      return totals;
+    }
+
+    function updateAnalysis() {
+      const targetExpenses = filterExpensesByPeriod(currentPeriod);
+      const total = targetExpenses.reduce((sum, item) => sum + Number(item.amount), 0);
+      const categoryTotals = getCategoryTotals(targetExpenses);
+      const top = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+      const schoolTotal = targetExpenses
+        .filter(item => SCHOOL_CATEGORIES.includes(item.category))
+        .reduce((sum, item) => sum + Number(item.amount), 0);
+
+      let periodBudget = monthlyBudget;
+      if (currentPeriod === "day") periodBudget = monthlyBudget / daysInMonth;
+      if (currentPeriod === "week") periodBudget = (monthlyBudget / daysInMonth) * 7;
+
+      const rate = periodBudget ? Math.round((total / periodBudget) * 100) : 0;
+
+      document.getElementById("totalExpense").textContent = formatWon(total);
+      document.getElementById("budgetRate").textContent = rate + "%";
+      document.getElementById("topCategory").textContent = top ? top[0] : "없음";
+      document.getElementById("schoolExpense").textContent = formatWon(schoolTotal);
+
+      renderAdviceList(makeAdviceMessages(total, periodBudget, top, schoolTotal, categoryTotals));
+      renderCategoryChart(categoryTotals, total);
+    }
+
+    function getPeriodName() {
+      if (currentPeriod === "day") return "오늘";
+      if (currentPeriod === "week") return "이번 주";
+      return "이번 달";
+    }
+
+    function getPeriodBudgetName() {
+      if (currentPeriod === "day") return "하루 권장 예산";
+      if (currentPeriod === "week") return "주간 권장 예산";
+      return "월 예산";
+    }
+
+    function makeAdviceMessages(total, periodBudget, top, schoolTotal, categoryTotals) {
+      const periodName = getPeriodName();
+      const budgetName = getPeriodBudgetName();
+
+      if (total === 0) return [`${periodName}에 입력된 지출이 없습니다. 소비 캘린더에서 지출을 추가하면 분석 결과가 표시됩니다.`];
+
+      const topCategoryName = top ? top[0] : "";
+      const topAmount = top ? top[1] : 0;
+      const topRate = total ? topAmount / total : 0;
+      const schoolRate = total ? schoolTotal / total : 0;
+      const budgetRate = periodBudget ? total / periodBudget : 0;
+      const remaining = periodBudget - total;
+      const cafeAmount = categoryTotals["카페"] || 0;
+      const deliveryAmount = categoryTotals["배달"] || 0;
+      const transportAmount = categoryTotals["교통"] || 0;
+      const cafeRate = total ? cafeAmount / total : 0;
+      const deliveryRate = total ? deliveryAmount / total : 0;
+
+      const messages = [];
+
+      if (budgetRate > 1) {
+        messages.push(`${periodName} 지출은 ${formatWon(total)}으로 ${budgetName}보다 ${formatWon(Math.abs(remaining))} 초과했습니다.`);
+      } else if (budgetRate >= 0.8) {
+        messages.push(`${periodName} 지출은 ${formatWon(total)}으로 ${budgetName}의 ${Math.round(budgetRate * 100)}%를 사용했습니다. 추가 지출 전 우선순위를 점검하는 편이 좋습니다.`);
+      } else {
+        messages.push(`${periodName} 지출은 ${formatWon(total)}으로 ${budgetName} 안에서 관리되고 있습니다. 남은 예산은 약 ${formatWon(Math.round(remaining))}입니다.`);
+      }
+
+      if (top) {
+        messages.push(`가장 큰 소비 카테고리는 ${topCategoryName}이며, ${formatWon(topAmount)}로 전체의 ${Math.round(topRate * 100)}%를 차지합니다.`);
+      }
+
+      if (deliveryRate >= 0.3) {
+        if (currentPeriod === "day") {
+          messages.push(`배달 지출 비중이 ${Math.round(deliveryRate * 100)}%로 높습니다. 오늘은 남은 식비 지출을 줄이면 예산 관리에 도움이 됩니다.`);
+        } else if (currentPeriod === "week") {
+          messages.push(`이번 주 배달 지출이 ${formatWon(deliveryAmount)}로 높은 편입니다. 다음 주에는 배달 횟수나 1회 주문 금액에 기준을 정해두면 식비 변동을 줄일 수 있습니다.`);
+        } else {
+          messages.push(`이번 달 배달 지출이 ${formatWon(deliveryAmount)}로 전체의 ${Math.round(deliveryRate * 100)}%를 차지합니다. 월 단위 식비 예산을 따로 정하면 반복 지출을 관리하기 쉽습니다.`);
+        }
+      }
+
+      if (cafeRate >= 0.25) {
+        if (currentPeriod === "day") {
+          messages.push(`카페 지출이 오늘 소비의 ${Math.round(cafeRate * 100)}%입니다. 작은 금액처럼 보여도 하루 예산에서 차지하는 비중이 큽니다.`);
+        } else {
+          messages.push(`${periodName} 카페 지출이 ${formatWon(cafeAmount)}입니다. 반복되는 음료 소비는 누적 금액이 커지므로 주간 또는 월간 한도를 정해보는 것이 좋습니다.`);
+        }
+      }
+
+      if (transportAmount >= total * 0.25 && transportAmount >= 10000) {
+        messages.push(`교통 지출이 ${formatWon(transportAmount)}로 높은 편입니다. 택시나 추가 이동이 많았는지 확인해볼 필요가 있습니다.`);
+      }
+
+      if (schoolRate >= 0.4) {
+        messages.push(`학교 관련 지출이 ${formatWon(schoolTotal)}로 전체의 ${Math.round(schoolRate * 100)}%입니다. 학식, 교재, 출력, 동아리 비용처럼 학교생활에서 발생하는 고정성 지출을 따로 관리하면 예산 계획이 더 정확해집니다.`);
+      }
+
+      return messages;
+    }
+
+    function renderAdviceList(messages) {
+      const adviceList = document.getElementById("adviceList");
+      adviceList.innerHTML = "";
+      messages.forEach((message, index) => {
+        const item = document.createElement("div");
+        item.className = "advice-item";
+        item.innerHTML = `
+          <div class="advice-num">${index + 1}</div>
+          <div>${escapeHTML(message)}</div>
+        `;
+        adviceList.appendChild(item);
+      });
+    }
+
+    function renderCategoryChart(categoryTotals, total) {
+      const chart = document.getElementById("categoryChart");
+      chart.innerHTML = "";
+
+      if (total === 0) {
+        chart.innerHTML = "<p class='muted'>분석할 지출 데이터가 없습니다.</p>";
+        return;
+      }
+
+      Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([category, amount]) => {
+          const percent = Math.round((amount / total) * 100);
+          const row = document.createElement("div");
+          row.className = "category-row";
+          row.innerHTML = `
+            <div class="category-label">
+              <strong>${escapeHTML(category)}</strong>
+              <span>${formatWon(amount)} · ${percent}%</span>
+            </div>
+            <div class="bar-bg">
+              <div class="bar-fill" style="width:${percent}%"></div>
+            </div>
+          `;
+          chart.appendChild(row);
+        });
+    }
+
+    function movePage(pageId) {
+      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+      document.getElementById(pageId).classList.add("active");
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.page === pageId);
+      });
+    }
+
+    function initializeApp() {
+      loadData();
+      document.getElementById("monthBudget").value = monthlyBudget;
+      fillCategorySelect(document.getElementById("modalNewCategory"), "식비");
+      updateBudgetView();
+      renderCalendarList();
+      updateAnalysis();
+      movePage("budgetPage");
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => movePage(btn.dataset.page));
+      });
+
+      document.querySelectorAll(".period-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentPeriod = btn.dataset.period;
+          document.querySelectorAll(".period-btn").forEach(item => item.classList.remove("active"));
+          btn.classList.add("active");
+          updateAnalysis();
+        });
+      });
+    }
+
+    initializeApp();
+  </script>
+</body>
+</html>
